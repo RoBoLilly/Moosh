@@ -1,177 +1,259 @@
 #include <iostream>
-using namespace std; 
+#include <GL/glew.h>
+#include "colors.cpp"
+#include "player.h"
+#include "map.h"
 
-#define RESET   "\033[0m"
-#define RED     "\033[31m"      /* Red */
-#define GREEN   "\033[32m"      /* Green */
-#define BLUE    "\033[34m"      /* Blue */
-#define WHITE   "\033[37m"      /* White */
-#define MAGENTA "\033[35m"      /* Magenta */
-#define BOLD    "\033[1m"       /*Bold Modifier*/
+using namespace std;
 
-enum orient {N,E,S,W};
-
-int entryPoint[2] = {1,0};
-static orient entryOrient = N;
-int grid[6][6] = {
-{0, 0, 0, 0, 0, 0},
-{0, 1, 1, 1, 0, 0},
-{0, 1, 0, 1, 1, 0},
-{1, 1, 0, 0, 1, 0},
-{0, 1, 0, 0, 1, 1},
-{0, 1, 0, 0, 0, 0}
+char command;
+int entryPoint[2] = {9, 2};
+int grid[10][10] = {
+    {0, 0, 1, 1, 1, 1, 3, 1, 1, 1},
+    {0, 0, 1, 0, 0, 0, 0, 0, 0, 1},
+    {0, 0, 1, 1, 1, 1, 1, 2, 0, 1},
+    {5, 3, 1, 0, 0, 0, 0, 0, 0, 1},
+    {0, 0, 0, 0, 0, 0, 1, 1, 1, 1},
+    {2, 1, 1, 1, 1, 0, 1, 0, 0, 0},
+    {0, 0, 0, 0, 1, 0, 1, 1, 1, 0},
+    {1, 1, 1, 3, 1, 0, 0, 0, 1, 0},
+    {1, 0, 1, 0, 1, 1, 1, 0, 1, 0},
+    {2, 0, 1, 0, 0, 0, 1, 1, 1, 0}
 };
+void askCommand(player player, map map);
+void printGrid(player player, map map);
+int isPermeable(int i, int j, map map);
+int checkAroundFor(player player, map map, int i);
 
-class player {
-    public:
-    int location[2];
-    orient orient;
-
-    int moveForward(){
-
-        if(orient == N){
-            if(grid[location[0]-1][location[1]] == 1){
-                cout << location[0] << endl;
-                location[0]--;
-                cout << location[0] << endl;
-                return 1;
-            }else{
-                return 0;
-            }
-        }
-        if(orient == E){
-            if(grid[location[0]][location[1]+1] == 1){
-                location[1]++;
-                return 1;
-            }else{
-                return 0;
-            }
-        }
-        if(orient == S){
-            if(grid[location[0]+1][location[1]] == 1){
-                location[0]++;
-                return 1;
-            }else{
-                return 0;
-            }
-        }
-        if(orient == W){
-            if(grid[location[0]][location[1]-1] == 1){
-                location[1]--;
-                return 1;
-            }else{
-                return 0;
-            }
-        }
-        return 0;
-    } 
-
-    void turnRight(){
-        if(orient == N){
-            orient = E;
-        }if(orient == E){
-            orient = S;
-        }if(orient == S){
-            orient = W;
-        }if(orient == W){
-            orient = N;
-        }
-        
-    }
-    void turnLeft(){
-        if(orient == N){
-            orient = W;
-        }if(orient == E){
-            orient = N;
-        }if(orient == S){
-            orient = E;
-        }if(orient == W){
-            orient = S;
-        }
-        
-    }
-};
-void printGrid(player player);
-
-void playerCommand(player player);
-
-void playerCommand(player player){
-    if(player.orient == N){
-        if(grid[player.location[0]-1][player.location[1]]){
-            cout << "Forward" << endl;
-        }
-        if(grid[player.location[0]][player.location[1]-1]){
-            cout << "Left" << endl;
-        }
-        if(grid[player.location[0]][player.location[1]+1]){
-            cout << "Right" << endl;
-        }
-        if(grid[player.location[0]+1][player.location[1]]){
-            cout << "Backward" << endl;
+int main(){
+    system("clear");
+    map map1;
+    player player1;
+    for (int a = 0; a<10; a++){
+        for (int b = 0; b < 10; b++){
+            map1.setGridValue(a, b, grid[a][b]);
         }
     }
-    char command;
-    cin >> command;
-    if(command == 'f'){
-        player.moveForward();
+    player1.setLocation(0, entryPoint[0]);
+    player1.setLocation(1, entryPoint[1]);
+
+    while (command != 'Q'){
+        cout << BLUE << "Moosh" << GREEN << "Vr.1" << RESET << endl;
+        if (player1.getInventory() == 1)
+        {
+            cout << YELLOW << "ß " << RESET;
+        }
+        askCommand(player1, map1);
+        printGrid(player1, map1);
+        system ("/bin/stty raw");
+        cin >> command;
+        system ("/bin/stty cooked");
+        if(map1.gridValue(player1.getLocation(0), player1.getLocation(1))==6){
+            
+        }
+        if (command == 'w')
+        {
+            if (isPermeable(player1.getLocation(0) - 1, player1.getLocation(1), map1))
+            {
+                player1.setLocation(0, player1.getLocation(0) - 1);
+            }
+        }
+        if (command == 's')
+        {
+            if (isPermeable(player1.getLocation(0) + 1, player1.getLocation(1), map1))
+            {
+                player1.setLocation(0, player1.getLocation(0) + 1);
+            }
+        }
+        if (command == 'a')
+        {
+            if (isPermeable(player1.getLocation(0), player1.getLocation(1) - 1, map1))
+            {
+                player1.setLocation(1, player1.getLocation(1) - 1);
+            }
+        }
+        if (command == 'd')
+        {
+            if (isPermeable(player1.getLocation(0), player1.getLocation(1) + 1, map1))
+            {
+                player1.setLocation(1, player1.getLocation(1) + 1);
+            }
+        }
+        if (command == 'e')
+        {
+            if (map1.gridValue(player1.getLocation(0), player1.getLocation(1)) == 2)
+            {
+                map1.setGridValue(player1.getLocation(0), player1.getLocation(1), 1);
+                player1.setInventory(1);
+            }
+            if(player1.getInventory()==1){
+                if(checkAroundFor(player1, map1, 3)){
+                    if (checkAroundFor(player1, map1, 3) == 2)
+                    {
+                        map1.setGridValue(player1.getLocation(0) + 1, player1.getLocation(1), 4);
+                    }
+                    if (checkAroundFor(player1, map1, 3) == 3)
+                    {
+                        map1.setGridValue(player1.getLocation(0) - 1, player1.getLocation(1), 4);
+                    }
+                    if (checkAroundFor(player1, map1, 3) == 4)
+                    {
+                        map1.setGridValue(player1.getLocation(0), player1.getLocation(1) + 1, 4);
+                    }
+                    if (checkAroundFor(player1, map1, 3) == 5)
+                    {
+                        map1.setGridValue(player1.getLocation(0), player1.getLocation(1) - 1, 4);
+                    }
+                    player1.setInventory(0);
+                }
+            }
+        }
+        system("clear");
+        if(map1.gridValue(player1.getLocation(0), player1.getLocation(1))==5){
+           cout << "You beat Moosh!" << endl;
+           cin >> command;
+           return 0;
+        }
     }
 }
-
-void printGrid(player player)
+void printGrid(player player, map map)
 {
-    for(int a=0;a<6;a++){
-        for(int b=0;b<6;b++){
-            if(a == player.location[0] && b == player.location[1]){
-                switch(player.orient){
-                    case N:
-                        cout << MAGENTA << "N" << RESET;
-                    break;
-                    case E:
-                        cout << MAGENTA << "E" << RESET;   
-                    break;
-                    case S:
-                        cout << MAGENTA << "S" << RESET;
-                    break;
-                    case W:
-                        cout << MAGENTA << "W" << RESET;
-                    break;
+    for (int a = 0; a < 10; a++)
+    {
+        for (int b = 0; b < 10; b++)
+        {
+            if (a == player.getLocation(0) && b == player.getLocation(1))
+            {
+                cout << MAGENTA << "X" << RESET;
+            }
+            else
+            {
+                if (map.gridValue(a, b) == 0)
+                {
+                    cout << RED << "#" << RESET;
                 }
-            }else{
-                if(grid[a][b] == 1){
+                if (map.gridValue(a, b) == 1)
+                {
                     cout << GREEN << "0" << RESET;
                 }
-                if(grid[a][b] == 0){
-                    cout << RED << "#" << RESET;
+                if (map.gridValue(a, b) == 2)
+                {
+                    cout << YELLOW << "ß" << RESET;
+                }
+                if (map.gridValue(a, b) == 3)
+                {
+                    cout << RED << "∆" << RESET;
+                }
+                if (map.gridValue(a, b) == 4)
+                {
+                    cout << GREEN << "∆" << RESET;
+                }
+                if (map.gridValue(a, b) == 5)
+                {
+                    cout << CYAN << "◊" << RESET;
+                }
+                if (map.gridValue(a, b) == 6 )
+                {
+                    cout << GREEN << "8" << RESET;
                 }
             }
             cout << " ";
         }
-    cout << endl;
+        cout << endl;
     }
 }
- 
-int main()
-{   
-    
-    player player1;
-    player1.location[0] = 5 ;
-    player1.location[1] = 1 ;
-    player1.orient = entryOrient;
-    
-    char q;
-    while(q != 'Q'){
-        printGrid(player1);
-        playerCommand(player1);
-        cout << player1.location[0] << endl;
-        //cin >> q;
+
+void askCommand(player player, map map)
+{
+    if(0){
+        if(map.gridValue(player.getLocation(0) - 1, player.getLocation(1))==1)
+        {
+            cout << "Forward, ";
+        }
+        if(map.gridValue(player.getLocation(0), player.getLocation(1) - 1)==1)
+        {
+            cout << "Left, ";
+        }
+        if(map.gridValue(player.getLocation(0), player.getLocation(1) + 1)==1)
+        {
+            cout << "Right, ";
+        }
+        if(map.gridValue(player.getLocation(0) + 1, player.getLocation(1))==1)
+        {
+            cout << "Backward, ";
+        }
     }
-    
-    // cout << player1.location[0] << ", " << player1.location[1] << endl;
-    // player1.moveForward();
-    // cout << player1.location[0] << ", " << player1.location[1] << endl;
-    // player1.moveForward();
-    // cout << player1.location[0] << ", " << player1.location[1] << endl;
-    // player1.turnLeft();
-    // player1.moveForward();
-    // cout << player1.location[0] << ", " << player1.location[1] << endl;                              
+    if(map.gridValue(player.getLocation(0), player.getLocation(1)) == 2){
+        cout << YELLOW <<"Pick up Key with e" << RESET;
+    }
+    if(checkAroundFor(player, map, 3)){
+        if(player.getInventory()==1){
+            cout << YELLOW << "Open door with with e" << RESET;
+        }else{
+            cout << YELLOW << "Door needs Key" << RESET;
+        }
+    }
+    cout << endl;
+}
+int isPermeable(int i, int j, map map)
+{
+    if (map.gridValue(i, j) == 0)
+    {
+        return 0;
+    }
+    else if (map.gridValue(i, j) == 1)
+    {
+        return 1;
+    }
+    else if (map.gridValue(i, j) == 2)
+    {
+        return 1;
+    }
+    else if (map.gridValue(i, j) == 3)
+    {
+        return 0;
+    }
+    else if (map.gridValue(i, j) == 4)
+    {
+        return 1;
+    }
+    else if (map.gridValue(i, j) == 5)
+    {
+        return 1;
+    }
+    else if (map.gridValue(i, j) == 6)
+    {
+        return 1;
+    }
+    else
+    {
+        return 0;
+    }
+}
+int checkAroundFor(player player, map map, int i)
+{
+    if (map.gridValue(player.getLocation(0), player.getLocation(1)) == i)
+    {
+        return 1;
+    }
+    else if (map.gridValue(player.getLocation(0) + 1, player.getLocation(1)) == i)
+    {
+        return 2;
+    }
+    else if (map.gridValue(player.getLocation(0) - 1, player.getLocation(1)) == i)
+    {
+        return 3;
+    }
+    else if (map.gridValue(player.getLocation(0), player.getLocation(1) + 1) == i)
+    {
+        return 4;
+    }
+    else if (map.gridValue(player.getLocation(0), player.getLocation(1) - 1) == i)
+    {
+        return 5;
+    }
+    else
+    {
+        return 0;
+    }
 }
