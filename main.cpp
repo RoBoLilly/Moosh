@@ -2,7 +2,8 @@
 #include "colors.cpp" // has color IDs
 #include "map.h"
 #include "player.h"
-#include "enemy.h"
+//#include "enemy.h"
+//#include "enemy.cpp"
 using namespace std;
 
 int printDirections = false; // tells askCommand to list possible actions 
@@ -44,26 +45,50 @@ int main(){
 
         if (command == 'w')
         {
-            if (isPermeable(player1.getLocation(0) - 1, player1.getLocation(1), map1)){
-                player1.moveForward();
+            if(!player1.getInvertControls()){
+                if (isPermeable(player1.getLocation(0) - 1, player1.getLocation(1), map1)){
+                    player1.moveForward();
+                }
+            }else{
+                if (isPermeable(player1.getLocation(0) + 1, player1.getLocation(1), map1)){
+                    player1.moveBackward();
+                }
             }
         }
         if (command == 's')
         {
-            if (isPermeable(player1.getLocation(0) + 1, player1.getLocation(1), map1)){
-                player1.moveBackward();
+            if(!player1.getInvertControls()){
+                if (isPermeable(player1.getLocation(0) + 1, player1.getLocation(1), map1)){
+                    player1.moveBackward();
+                }
+            }else{
+                if (isPermeable(player1.getLocation(0) - 1, player1.getLocation(1), map1)){
+                    player1.moveForward();
+                }
             }
         }
         if (command == 'a')
         {
-            if (isPermeable(player1.getLocation(0), player1.getLocation(1) - 1, map1)){
-                player1.moveLeft();
+            if(!player1.getInvertControls()){
+                if (isPermeable(player1.getLocation(0), player1.getLocation(1) - 1, map1)){
+                    player1.moveLeft();
+                }
+            }else{
+                if (isPermeable(player1.getLocation(0), player1.getLocation(1) + 1, map1)){
+                    player1.moveRight();
+                }
             }
         }
         if (command == 'd')
         {
-            if (isPermeable(player1.getLocation(0), player1.getLocation(1) + 1, map1)){
-                player1.moveRight();
+            if(!player1.getInvertControls()){
+                if (isPermeable(player1.getLocation(0), player1.getLocation(1) + 1, map1)){
+                    player1.moveRight();
+                }
+            }else{
+                if (isPermeable(player1.getLocation(0), player1.getLocation(1) - 1, map1)){
+                    player1.moveLeft();
+                }
             }
         }
         if (command == 'e')
