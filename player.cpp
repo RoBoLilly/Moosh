@@ -1,3 +1,4 @@
+#include "map.h"
 #include "player.h"
 
 void player::setLocation(int i, int coord){
@@ -24,31 +25,47 @@ void player::setInvertControls(int i){
 int player::getInvertControls(){
     return invertControls;
 }
-void player::moveForward(){
-    if(getInvertControls() == 0){
-        setLocation(0, getLocation(0) - 1);
+void player::moveForward(map &map){
+    if(!getInvertControls()){
+        if (map.isPermeable(getLocation(0) - 1, getLocation(1))){
+            setLocation(0, getLocation(0) - 1); // Move Forward
+        }
     }else{
-        setLocation(0, getLocation(0) + 1);
+        if (map.isPermeable(getLocation(0) + 1, getLocation(1))){
+            setLocation(0, getLocation(0) + 1); // Move Backward
+        }
     }
 }
-void player::moveBackward(){
-        if(getInvertControls() == 0){
-        setLocation(0, getLocation(0) + 1);
+void player::moveBackward(map &map){
+    if(!getInvertControls()){
+        if (map.isPermeable(getLocation(0) + 1, getLocation(1))){
+            setLocation(0, getLocation(0) + 1); // Move Backward
+        }
     }else{
-        setLocation(0, getLocation(0) - 1);
+        if (map.isPermeable(getLocation(0) - 1, getLocation(1))){
+            setLocation(0, getLocation(0) - 1); // Move Forward
+        }
     }
 }
-void player::moveLeft(){
-    if(getInvertControls() == 0){
-        setLocation(1, getLocation(1) - 1);
+void player::moveLeft(map &map){
+    if(!getInvertControls()){
+        if (map.isPermeable(getLocation(0), getLocation(1) - 1)){
+            setLocation(1, getLocation(1) - 1);
+        }
     }else{
-        setLocation(1, getLocation(1) + 1);
+        if (map.isPermeable(getLocation(0), getLocation(1) + 1)){
+            setLocation(1, getLocation(1) + 1);
+        }
     }
 }
-void player::moveRight(){
-    if(getInvertControls() == 0){
-        setLocation(1, getLocation(1) + 1);
+void player::moveRight(map &map){
+    if(!getInvertControls()){
+        if (map.isPermeable(getLocation(0), getLocation(1) + 1)){
+            setLocation(1, getLocation(1) + 1);
+        }
     }else{
-        setLocation(1, getLocation(1) - 1);
+        if (map.isPermeable(getLocation(0), getLocation(1) - 1)){
+            setLocation(1, getLocation(1) - 1);
+        }
     }
 }

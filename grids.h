@@ -11,6 +11,7 @@ int entryGrid[2] = {0, 0};
 5 = endPoint
 6 = reversePoint
 7 = 3keyDoor
+8 = enemy
 */
 
 int gird0MapLocation[2] = {0, 0};

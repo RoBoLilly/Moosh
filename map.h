@@ -15,4 +15,5 @@ class map {
     void loadBackwardGrid();
     void loadLeftGrid();
     void loadRightGrid();
+    int isPermeable(int i, int j);
 };

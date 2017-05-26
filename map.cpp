@@ -135,3 +135,19 @@ void map::loadRightGrid(){
 void map::loadLeftGrid(){
     setLoadedGrid(getLoadedGrid(0)-1, getLoadedGrid(1));
 }
+int map::isPermeable(int i, int j)
+{
+    if(gridValue(i, j) == -1){return 1;}
+    else if(gridValue(i, j) == 0){return 0;}
+    else if(gridValue(i, j) == 1){return 1;}
+    else if(gridValue(i, j) == 2){return 1;}
+    else if(gridValue(i, j) == 3){return 0;}
+    else if(gridValue(i, j) == 4){return 1;}
+    else if(gridValue(i, j) == 5){return 1;}
+    else if(gridValue(i, j) == 6){return 1;}
+    else if(gridValue(i, j) == 7){return 0;}
+    else if(gridValue(i, j) == 8){return 0;}
+    else{
+        return 0;
+    }
+}
